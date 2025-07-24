@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Connections Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGgI1BtimIs7IMEhypT8ZDN6avR2-rw3k",
+            authDomain: "linkedin-connections-tracker.firebaseapp.com",
+            projectId: "linkedin-connections-tracker",
+            storageBucket: "linkedin-connections-tracker.firebasestorage.app",
+            messagingSenderId: "879135374806",
+            appId: "1:879135374806:web:762bed5f73a16db1477877"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Firebase available globally
+        window.firebase = { db, collection, addDoc, getDocs, query, orderBy, where, deleteDoc, doc };
+    </script>
+</head>
+<body>
+    <div class="header">
+        <span class="small-text">MSC LinkedIn Tool</span>
+        <h1 class="main-header">Connections Tracker</h1>
+    </div>
+
+    <div class="table-controls">
+        <div class="controls-left">
+            <button class="control-btn load-btn" id="loadFromFirebase">
+                Load Data
+            </button>
+            <button class="control-btn secondary-btn" id="showUploadBtn">
+                + Add CSV
+            </button>
+            <button class="control-btn secondary-btn" id="showHistoryBtn">
+                Upload History
+            </button>
+        </div>
+        <div class="controls-right">
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="Search connections..."
+                    id="searchInput"
+                >
+            </div>
+            <select class="filter-select" id="typeFilter">
+                <option value="">All Connections</option>
+                <option value="positive">Positive Delta</option>
+                <option value="negative">Negative Delta</option>
+                <option value="unchanged">No Change</option>
+            </select>
+            <select class="filter-select" id="uploadFilter">
+                <option value="all">All Historical Data</option>
+                <option value="current">Current Upload Only</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="upload-panel" id="uploadPanel" style="display: none;">
+        <div class="upload-content">
+            <input type="file" id="fileInput" accept=".csv" style="display: none;">
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                Choose CSV File
+            </button>
+            <div class="upload-name-container" id="uploadNameContainer" style="display: none;">
+                <input type="text" id="uploadName" class="upload-name-input" placeholder="Name this upload (e.g., 'July 2025')" />
+                <button class="save-btn" id="saveToFirebase">Save to Database</button>
+            </div>
+            <div class="firebase-status" id="firebaseStatus"></div>
+        </div>
+    </div>
+
+    <div class="history-panel" id="historyPanel" style="display: none;">
+        <div class="history-content">
+            <h3>Upload History</h3>
+            <div class="history-list" id="historyList">
+                <div class="loading">Loading upload history...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-wrapper">
+            <div class="table-scroll">
+                <table id="connectionsTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-column="name">Name</th>
+                            <th class="sortable" data-column="mutual_connections">Current Mutual Connections</th>
+                            <th class="sortable" data-column="previous_mutual_connections">Previous Mutual Connections</th>
+                            <th class="sortable" data-column="delta">Delta</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="4" class="loading">Upload your CSV file to get started</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <button id="prevBtn">Previous</button>
+            <div class="page-info">
+                <span id="pageInfo">Page 1 of 1</span>
+            </div>
+            <button id="nextBtn">Next</button>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js" defer></script>
+</body>
+</html>
